@@ -2,23 +2,39 @@ import Agency from '../models/agencyModel.js';
 import Client from '../models/clientModel.js';
 
 const createAgencyAndClient = async (req, res) => {
-  let savedAgency; // Declare the variable outside the if block
+  let savedAgency;
 
   try {
     const { agencyData, clientData } = req.body;
 
     if (agencyData && !clientData) {
+      // Check if an agency with the same name or phone number already exists
+      const existingAgency = await Agency.findOne({
+        $or: [{ Name: agencyData.Name }, { PhoneNumber: agencyData.PhoneNumber }],
+      });
+
+      if (existingAgency) {
+        return res.status(400).json({ message: 'Agency already exists with the same name or phone number' });
+      }
+
       // Create an agency
       const newAgency = new Agency(agencyData);
       await newAgency.validate();
       savedAgency = await newAgency.save();
 
-      // Log savedAgency data to the terminal
       console.log('Saved Agency:', savedAgency);
 
       res.status(201).json({ message: 'Agency created successfully', agency: savedAgency });
     } else if (clientData && !agencyData) {
-      // Check if AgencyId is present in clientData
+      // Check if a client with the same name or phone number already exists
+      const existingClient = await Client.findOne({
+        $or: [{ Name: clientData.Name }, { PhoneNumber: clientData.PhoneNumber }],
+      });
+
+      if (existingClient) {
+        return res.status(400).json({ message: 'Client already exists with the same name or phone number' });
+      }
+
       if (!clientData.AgencyId) {
         return res.status(400).json({ message: 'Bad Request: Provide AgencyId in clientData' });
       }
@@ -27,7 +43,6 @@ const createAgencyAndClient = async (req, res) => {
       const newClient = new Client(clientData);
       await newClient.validate();
 
-      // Assign agencyId to clientData before saving
       const savedClient = await newClient.save();
 
       res.status(201).json({ message: 'Client created successfully', client: savedClient });
@@ -40,4 +55,4 @@ const createAgencyAndClient = async (req, res) => {
   }
 };
 
-export { createAgencyAndClient };
+export {createAgencyAndClient} ;

@@ -82,3 +82,4 @@ curl http://localhost:5000/api/client/top-client-details
 
 Deploy the application to a test server ( AWS) along with the database for testing.
 
+"http://ec2-13-201-49-234.ap-south-1.compute.amazonaws.com/"
