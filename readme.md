@@ -78,8 +78,24 @@ curl http://localhost:5000/api/client/top-client-details
 2. Import the provided `agency-client-api.postman_collection.json` file.
 3. Use the imported requests to test each API endpoint.
 
+
+
+
+
 ## Deployment
 
-Deploy the application to a test server ( AWS) along with the database for testing.
+   server_name ec2-13-201-49-234.ap-south-1.compute.amazonaws.com 
+
+    location / {
+        proxy_pass http://localhost:5000; #whatever port your app runs on
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+
+
+sudo certbot --nginx -d ec2-13-201-49-234.ap-south-1.compute.amazonaws.com 
 
 "http://ec2-13-201-49-234.ap-south-1.compute.amazonaws.com/"
